@@ -4,6 +4,7 @@ import org.jbox2d.collision.shapes.*;
 import org.jbox2d.dynamics.*;
 
 class Cloud {
+  boolean dead = false;
   float speed;
   Vec2 position;
   float angle; 

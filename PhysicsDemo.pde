@@ -35,31 +35,36 @@ void setup() {
 }
 
 void update() {
-  
+
   world.step(timeStep, 6, 3);
   timer -= .05;
   ball.update();
   if (timer <= 0) {
     timer = random(10, 20);
     Vec2 spawnPoint = new Vec2();
-    float leftOrRight = random(-1,1);
-    if (leftOrRight < 0) spawnPoint = new Vec2(cam.pos.x - 100, cam.pos.y + random(-50,50));
-    else spawnPoint = new Vec2(cam.pos.x + 100, cam.pos.y + random(-50,50));
-    Cloud c = new Cloud(spawnPoint, 50, 20, "Cloud.png",cloudSpeed);
-    c.body = makeABox(c.position, c.w, c.h,true);
+    float leftOrRight = random(-1, 1);
+    if (leftOrRight < 0) spawnPoint = new Vec2(cam.pos.x - 100, cam.pos.y + random(-50, 50));
+    else spawnPoint = new Vec2(cam.pos.x + 100, cam.pos.y + random(-50, 50));
+    Cloud c = new Cloud(spawnPoint, 50, 20, "Cloud.png", cloudSpeed);
+    c.body = makeABox(c.position, c.w, c.h, true);
     //c.speed = cloudSpeed;
     clouds.add(c);
   }
 
-  for (int i = 0;i<clouds.size();i++) {
+  for (int i = clouds.size()-1;i>=0;i--) {
     clouds.get(i).update();
     if (clouds.get(i).speed > 0) {
       if (clouds.get(i).position.x > cam.pos.x + 300) {
-        clouds.remove(i);
+        clouds.get(i).dead = true;
       }
+    }
+    if (clouds.get(i).speed < 0) {
       if (clouds.get(i).position.x < cam.pos.x - 300) {
-        clouds.remove(i);
+        clouds.get(i).dead = true;
       }
+    }
+    if (clouds.get(i).dead){
+       clouds.remove(i); 
     }
   }
   //platformPosition.x ++;
