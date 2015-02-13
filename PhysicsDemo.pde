@@ -35,7 +35,7 @@ void setup() {
 }
 
 void update() {
-
+println(clouds.size());
   world.step(timeStep, 6, 3);
   timer -= .05;
   ball.update();
@@ -47,6 +47,7 @@ void update() {
     else spawnPoint = new Vec2(cam.pos.x + 100, cam.pos.y + random(-50, 50));
     Cloud c = new Cloud(spawnPoint, 50, 20, "Cloud.png", cloudSpeed);
     c.body = makeABox(c.position, c.w, c.h, true);
+    //boxBodies.add(c.body);
     //c.speed = cloudSpeed;
     clouds.add(c);
   }
@@ -64,6 +65,7 @@ void update() {
       }
     }
     if (clouds.get(i).dead){
+       clouds.get(i).body.destroyFixture(clouds.get(i).body.getFixtureList());
        clouds.remove(i); 
     }
   }

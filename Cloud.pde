@@ -35,6 +35,28 @@ class Cloud {
   }
   public void draw() {
     sprite.draw();
+    //drawBody(body);
   }
+  void drawBody(Body body) {
+  PolygonShape ps = (PolygonShape)body.getFixtureList().getShape(); 
+  //CircleShape cs = (CircleShape)body.getFixtureList().getShape();
+  Vec2[] verts = ps.getVertices();
+  Vec2 pos = body.getPosition();
+
+  noStroke();
+  if (body.isAwake())fill(255);
+  else fill(127);
+
+
+  pushMatrix();
+  translate(pos.x, pos.y);
+  rotate(body.getAngle());
+  beginShape();
+  for (int i = 0; i < ps.getVertexCount(); i++) {
+    vertex(verts[i].x, verts[i].y);
+  }
+  endShape();
+  popMatrix();
+}
 }
 
