@@ -2,7 +2,7 @@ import org.jbox2d.common.*;
 import org.jbox2d.collision.*;
 import org.jbox2d.collision.shapes.*;
 import org.jbox2d.dynamics.*;
-
+float cloudSpeed = 1;
 Ball ball;
 float speed;
 float maxSpeed = 5;
@@ -10,7 +10,7 @@ float timer = 3.0f;
 World world;
 float timeStep = 1.0/30;
 float speedY;
-Vec2 platformPosition = new Vec2(400,300);
+Vec2 platformPosition = new Vec2(400, 300);
 
 
 ArrayList<Cloud> clouds = new ArrayList<Cloud>();
@@ -22,33 +22,53 @@ Camera cam = new Camera();
 Body platform;
 
 void setup() {
-  ball = new Ball(new Vec2(),32,"ball.png");
+  ball = new Ball(new Vec2(), 32, "ball.png");
   size(800, 500);
   world = new World(new Vec2(0, 10));
-  platform =makeABox(new Vec2(400, 300), 30,10, true);
+  platform =makeABox(new Vec2(400, 300), 30, 10, true);
   //mainBox = makeACircle(new Vec2(400, 0), 10, false);
-  ball.body = makeACircle(new Vec2(400,0),10,false);
-  
-  
+  ball.body = makeACircle(new Vec2(400, 0), 10, false);
+
+
   //circleBodies.add(mainBox);
   boxBodies.add(platform);
 }
 
 void update() {
-  float deltaTime = millis()/1000.0;
-  world.step(timeStep, 6,3);
-  timer -= deltaTime;
+  
+  world.step(timeStep, 6, 3);
+  timer -= .05;
   ball.update();
-  if(timer <= 0){
-     Cloud c = new Cloud(new Vec2(cam.pos.x + 10, cam.pos.y),57,26,"cloud.png"); 
+  if (timer <= 0) {
+    timer = random(10, 20);
+    Vec2 spawnPoint = new Vec2();
+    float leftOrRight = random(-1,1);
+    if (leftOrRight < 0) spawnPoint = new Vec2(cam.pos.x - 100, cam.pos.y + random(-50,50));
+    else spawnPoint = new Vec2(cam.pos.x + 100, cam.pos.y + random(-50,50));
+    Cloud c = new Cloud(spawnPoint, 50, 20, "Cloud.png",cloudSpeed);
+    c.body = makeABox(c.position, c.w, c.h,true);
+    //c.speed = cloudSpeed;
+    clouds.add(c);
+  }
+
+  for (int i = 0;i<clouds.size();i++) {
+    clouds.get(i).update();
+    if (clouds.get(i).speed > 0) {
+      if (clouds.get(i).position.x > cam.pos.x + 300) {
+        clouds.remove(i);
+      }
+      if (clouds.get(i).position.x < cam.pos.x - 300) {
+        clouds.remove(i);
+      }
+    }
   }
   //platformPosition.x ++;
-  if(Keys.RIGHT) speed++;
-  if(Keys.LEFT) speed--;
+  if (Keys.RIGHT) speed++;
+  if (Keys.LEFT) speed--;
   platformPosition.x += speed;
   if (speed >= maxSpeed) speed = maxSpeed;
   speed *= .95f;
-  platform.setTransform(platformPosition,platform.getAngle());
+  platform.setTransform(platformPosition, platform.getAngle());
   cam.update();
 }
 
@@ -60,12 +80,15 @@ void draw() {
   /*for (Body body = world.getBodyList();body != null;body = body.getNext()) {
    drawBody(body);
    }*/
-   ball.draw();
+  ball.draw();
   for (Body b : boxBodies) {
     drawBody(b);
   }
   for (Body b : circleBodies) {
     drawCircleBody(b);
+  }
+  for (Cloud b : clouds) {
+    b.draw();
   }
   popMatrix();
 }
